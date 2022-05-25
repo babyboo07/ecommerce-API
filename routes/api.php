@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\PhotoController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
@@ -28,4 +29,10 @@ Route::controller(UserController::class)->group(function(){
     Route::get('/users','index');
     Route::post('/users/add','create');
     Route::get('/users/delete/{id}','destroy');
+    Route::get('/users/show/{id}','show');
+    Route::post('/users/edit/{id}','edit');
+});
+
+Route::controller(CategoryController::class)->group(function(){
+    Route::get('/categories','index');
 });

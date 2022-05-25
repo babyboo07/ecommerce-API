@@ -6,10 +6,12 @@ use App\Common\Common;
 use App\Models\Notification;
 use App\Http\Requests\StoreNotificationRequest;
 use App\Http\Requests\UpdateNotificationRequest;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Mockery\Undefined;
 
 use function PHPUnit\Framework\isNull;
 
@@ -23,7 +25,7 @@ class UserController extends Controller
     public function index()
     {
         //
-        $users = DB::table('users')->join('roles','users.roleId', '=','roles.id')->select('users.*','roles.roleName');
+        $users = DB::table('users')->join('roles', 'users.roleId', '=', 'roles.id')->select('users.*', 'roles.roleName')->orderBy('users.id', 'asc');
         $users = $users->get();
         return response()->json($users);
     }
@@ -51,19 +53,19 @@ class UserController extends Controller
             $imgPath = Common::saveImgBase64($img, 'images');
         }
 
-        $usersData = array('fullName' => $fullname, 
-                        'password' => $password, 
-                        'phone' => $phone, 
-                        'email'=>$email,
-                        'address' => $address,
-                        'dob' => $dob,
-                        'gender'=>$gender,
-                        'roleId'=> $role,
-                        'imgPath' => $imgPath
-                    );
+        $usersData = array(
+            'fullName' => $fullname,
+            'password' => $password,
+            'phone' => $phone,
+            'email' => $email,
+            'address' => $address,
+            'dob' => $dob,
+            'gender' => $gender,
+            'roleId' => $role,
+            'imgPath' => $imgPath
+        );
         DB::table('users')->insert($usersData);
         return response()->json($usersData);
-        
     }
 
     /**
@@ -83,9 +85,12 @@ class UserController extends Controller
      * @param  \App\Models\Notification  $notification
      * @return \Illuminate\Http\Response
      */
-    public function show(Notification $notification)
+    public function show($id)
     {
         //
+        $users = DB::table('users')
+            ->where('id', $id)->first();
+        return response()->json($users);
     }
 
     /**
@@ -94,9 +99,47 @@ class UserController extends Controller
      * @param  \App\Models\Notification  $notification
      * @return \Illuminate\Http\Response
      */
-    public function edit(Notification $notification)
+    public function edit($id, Request $request)
     {
-        //
+        $ret = ['status' => 'failed', 'message' => ''];
+        $users = User::find($id);
+
+        if (!$users) {
+            $ret['message'] = 'Cannot found user with id =' . $id;
+
+            return response()->json($ret);
+        }
+        $users->fullName = $request->get('fullName');
+        $users->phone = $request->get('phone');
+        $users->email = $request->get('email');
+        $users->address = $request->get('address');
+        $users->dob = strtotime($request->get('dob'));
+        $users->gender = $request->get('gender');
+        $users->roleId = $request->get('roleId');
+        $img = $request->get('image');
+        $imgPath = $users->imgPath;
+        if ($img && str_contains($img,';base64,')) {
+            $imgPath = Common::saveImgBase64($request->get('image'), 'images');
+        }
+
+        DB::table('users')
+            ->where('id', $id)    
+            ->update([
+                'fullName' => $request->get('fullName'),
+                'phone' => $request->get('phone'),
+                'email' => $request->get('email'),
+                'address' => $request->get('address'),
+                'dob' => date('Y-m-d', strtotime($request->get('dob'))),
+                'gender' => $request->get('gender'),
+                'roleId' => $request->get('roleId'),
+                'imgPath' => $imgPath
+            ]);
+
+        $ret['status'] = 'success';
+        $ret['message'] = 'Updated user successfully';
+        $ret['data'] = $users;
+
+        return response()->json($ret);
     }
 
     /**
@@ -109,6 +152,7 @@ class UserController extends Controller
     public function update(UpdateNotificationRequest $request, Notification $notification)
     {
         //
+
     }
 
     /**
@@ -120,7 +164,7 @@ class UserController extends Controller
     public function destroy($id)
     {
         //
-        $users = DB::table('users')->where('id',$id)->delete();
-        return response()->json('$users');
+        $users = DB::table('users')->where('id', $id)->delete();
+        return response()->json($users);
     }
 }

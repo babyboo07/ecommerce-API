@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
+use Illuminate\Support\Facades\DB;
 
 class CategoryController extends Controller
 {
@@ -15,7 +16,8 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        //
+        $category = DB::table('category as c')->leftJoin('category as pc', 'c.cateId', '=', 'pc.id')->select('c.*', 'pc.cateName as parentName');
+        return response()->json($category->get());
     }
 
     /**
