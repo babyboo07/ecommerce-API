@@ -113,27 +113,15 @@ class UserController extends Controller
         $users->phone = $request->get('phone');
         $users->email = $request->get('email');
         $users->address = $request->get('address');
-        $users->dob = strtotime($request->get('dob'));
+        $users->dob = date('Y-m-d', strtotime($request->get('dob')));
         $users->gender = $request->get('gender');
         $users->roleId = $request->get('roleId');
         $img = $request->get('image');
-        $imgPath = $users->imgPath;
         if ($img && str_contains($img,';base64,')) {
-            $imgPath = Common::saveImgBase64($request->get('image'), 'images');
+            $users->imgPath = Common::saveImgBase64($request->get('image'), 'images');
         }
 
-        DB::table('users')
-            ->where('id', $id)    
-            ->update([
-                'fullName' => $request->get('fullName'),
-                'phone' => $request->get('phone'),
-                'email' => $request->get('email'),
-                'address' => $request->get('address'),
-                'dob' => date('Y-m-d', strtotime($request->get('dob'))),
-                'gender' => $request->get('gender'),
-                'roleId' => $request->get('roleId'),
-                'imgPath' => $imgPath
-            ]);
+        $users->update();
 
         $ret['status'] = 'success';
         $ret['message'] = 'Updated user successfully';

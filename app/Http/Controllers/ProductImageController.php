@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\ProductImage;
 use App\Http\Requests\StoreProductImageRequest;
 use App\Http\Requests\UpdateProductImageRequest;
+use Illuminate\Http\Client\Request;
+use Illuminate\Support\Facades\DB;
 
 class ProductImageController extends Controller
 {
@@ -23,9 +25,10 @@ class ProductImageController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        $proImg = new ProductImage();
+        $proImg->path = $request-> get('images');
     }
 
     /**

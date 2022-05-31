@@ -1,10 +1,9 @@
 <?php
 
 use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\PhotoController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,18 +20,32 @@ use Illuminate\Support\Facades\Route;
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
-Route::controller(RoleController::class)->group(function(){
-    Route::get('/role','index');
+Route::controller(RoleController::class)->group(function () {
+    Route::get('/role', 'index');
 });
 
-Route::controller(UserController::class)->group(function(){
-    Route::get('/users','index');
-    Route::post('/users/add','create');
-    Route::get('/users/delete/{id}','destroy');
-    Route::get('/users/show/{id}','show');
-    Route::post('/users/edit/{id}','edit');
+Route::controller(UserController::class)->group(function () {
+    Route::get('/users', 'index');
+    Route::post('/users/add', 'create');
+    Route::get('/users/delete/{id}', 'destroy');
+    Route::get('/users/show/{id}', 'show');
+    Route::post('/users/edit/{id}', 'edit');
 });
 
-Route::controller(CategoryController::class)->group(function(){
-    Route::get('/categories','index');
+Route::controller(CategoryController::class)->group(function () {
+    Route::get('/category', 'index');
+    Route::get('/category/getParentList', 'getParentCate');
+    Route::post('/category/add', 'create');
+    Route::get('/category/show/{id}', 'show');
+    Route::post('/category/edit/{id}', 'edit');
+    Route::get('/category/delete/{id}', 'destroy');
+});
+
+Route::controller(ProductController::class)->group(function () {
+    Route::get('/product', 'index');
+    Route::get('/product/detail/{id}','show');
+    Route::get('/product/delete/{id}', 'destroy');
+    Route::get('/product/catelist','getCategoryList');
+    Route::post('/product/add','create');
+    Route::post('/product/edit/{id}', 'edit');
 });

@@ -20,11 +20,11 @@ return new class extends Migration
             $table->float('price');
             $table->integer('qty');
             $table->foreignId('cateId')->constrained('category');
-            $table->string('material',256);
-            $table->float('evaluate');
+            $table->string('material',256)->nullable();;
+            $table->float('evaluate')->nullable();;
             $table->date('createdDate');
             $table->date('updatedDate');
-            $table->integer('discount');
+            $table->integer('discount')->nullable();;
         });
     }
 
