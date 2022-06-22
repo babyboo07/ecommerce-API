@@ -19,7 +19,11 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $product = DB::table('product')->leftJoin('category', 'product.cateId', '=', 'category.id')->select('product.*', 'category.cateName');
+        $product = DB::table('product')->leftJoin('category', 'product.cateId', '=', 'category.id')
+            ->leftJoin('product_images', function ($join) {
+                $join->on('product_images.id', '=', DB::raw('(Select id from product_images where product_images.productId = product.id LIMIT 1)'));
+            })
+            ->select('product.*', 'category.cateName', 'product_images.path')->distinct('product.id');
         $product = $product->get();
         return response()->json($product);
     }
@@ -119,7 +123,7 @@ class ProductController extends Controller
         }
         $product->name = $request->get('name');
         $product->description = $request->get('description');
-        $product->cateId = $request->get('cateName');
+        $product->cateId = $request->get('cateId');
         $product->qty = $request->get('qty');
         $product->price = $request->get('price');
         $product->material = $request->get('material');
@@ -140,7 +144,7 @@ class ProductController extends Controller
         $ret['message'] = 'Updated product successfully';
         $ret['data'] = $product;
 
-        DB::table('product_images')->update($productImgs);
+        DB::table('product_images')->insert($productImgs);
         return response()->json($ret);
     }
 

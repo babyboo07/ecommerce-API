@@ -26,6 +26,8 @@ return new class extends Migration
             $table->foreign('roleId')
                 ->references('id')->on('roles');
             $table->string('imgPath',500)->nullable();
+            $table->rememberToken();
+            $table->timestamps();
         });
     }
 

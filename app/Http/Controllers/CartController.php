@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\cart;
 use App\Http\Requests\StorecartRequest;
 use App\Http\Requests\UpdatecartRequest;
+use Illuminate\Http\Request;
 
 class CartController extends Controller
 {
@@ -23,9 +24,14 @@ class CartController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        $cart = new Cart();
+        $cart->productId = $request->get('productId');
+        $cart->qty = $request->get('qty');
+        $cart->userId = $request->get('userId');
+        $cart->save();
+        return response()->json($cart);
     }
 
     /**

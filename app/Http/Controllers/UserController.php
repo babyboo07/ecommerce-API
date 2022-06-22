@@ -39,7 +39,7 @@ class UserController extends Controller
     {
         //
         $fullname = $request->get('fullName');
-        $password = $request->get('password');
+        $password = bcrypt($request->get('password'));
         $phone = $request->get('phone');
         $email = $request->get('email');
         $address = $request->get('address');
@@ -117,7 +117,7 @@ class UserController extends Controller
         $users->gender = $request->get('gender');
         $users->roleId = $request->get('roleId');
         $img = $request->get('image');
-        if ($img && str_contains($img,';base64,')) {
+        if ($img && str_contains($img, ';base64,')) {
             $users->imgPath = Common::saveImgBase64($request->get('image'), 'images');
         }
 
@@ -154,5 +154,10 @@ class UserController extends Controller
         //
         $users = DB::table('users')->where('id', $id)->delete();
         return response()->json($users);
+    }
+
+    public function getUserInfo()
+    {
+        return response()->json(auth()->user());
     }
 }

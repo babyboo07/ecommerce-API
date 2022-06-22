@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RoleController;
@@ -20,11 +22,18 @@ use Illuminate\Support\Facades\Route;
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
+
+Route::controller(AuthController::class)->group(function () {
+    Route::post('/register', 'register');
+    Route::post('/login', 'login');
+});
+
 Route::controller(RoleController::class)->group(function () {
     Route::get('/role', 'index');
 });
 
 Route::controller(UserController::class)->group(function () {
+    Route::get('/getUserInfo', 'getUserInfo');
     Route::get('/users', 'index');
     Route::post('/users/add', 'create');
     Route::get('/users/delete/{id}', 'destroy');
@@ -43,9 +52,13 @@ Route::controller(CategoryController::class)->group(function () {
 
 Route::controller(ProductController::class)->group(function () {
     Route::get('/product', 'index');
-    Route::get('/product/detail/{id}','show');
+    Route::get('/product/detail/{id}', 'show');
     Route::get('/product/delete/{id}', 'destroy');
-    Route::get('/product/catelist','getCategoryList');
-    Route::post('/product/add','create');
+    Route::get('/product/catelist', 'getCategoryList');
+    Route::post('/product/add', 'create');
     Route::post('/product/edit/{id}', 'edit');
+});
+
+Route::controller(CartController::class)->group(function (){
+    Route::post('/cart/add', 'create');
 });
