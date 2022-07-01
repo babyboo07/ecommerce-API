@@ -93,7 +93,8 @@ class ProductController extends Controller
     {
         $product = DB::table('product as pro')
             ->leftJoin('category', 'pro.cateId', '=', 'category.id')
-            ->select('pro.*', 'category.cateName')
+            ->leftJoin('product_lovers','pro.id', '=', 'product_lovers.productId')
+            ->select('pro.*', 'category.cateName', 'product_lovers.*')
             ->where('pro.id', '=', $id)->first();
 
         if ($product !== null) {

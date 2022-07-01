@@ -25,7 +25,8 @@ class UserController extends Controller
     public function index()
     {
         //
-        $users = DB::table('users')->join('roles', 'users.roleId', '=', 'roles.id')->select('users.*', 'roles.roleName')->orderBy('users.id', 'asc');
+        $users = DB::table('users')->join('roles', 'users.roleId', '=', 'roles.id')
+        ->select('users.*', 'roles.roleName')->orderBy('users.id', 'asc');
         $users = $users->get();
         return response()->json($users);
     }
@@ -137,10 +138,24 @@ class UserController extends Controller
      * @param  \App\Models\Notification  $notification
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateNotificationRequest $request, Notification $notification)
+    public function editpassword($id, Request $request)
     {
-        //
+        $ret = ['status' => 'failed', 'message' => ''];
+        $users = User::find($id);
 
+        if (!$users) {
+            $ret['message'] = 'Cannot found user with id =' . $id;
+
+            return response()->json($ret);
+        }
+        $users->password = bcrypt($request->get('password'));
+        $users->save();
+
+        $ret['status'] = 'success';
+        $ret['message'] = 'Updated user successfully';
+        $ret['data'] = $users;
+
+        return response()->json($ret);
     }
 
     /**

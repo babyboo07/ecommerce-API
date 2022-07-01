@@ -6,6 +6,7 @@ use App\Models\cart;
 use App\Http\Requests\StorecartRequest;
 use App\Http\Requests\UpdatecartRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CartController extends Controller
 {
@@ -28,7 +29,7 @@ class CartController extends Controller
     {
         $cart = new Cart();
         $cart->productId = $request->get('productId');
-        $cart->qty = $request->get('qty');
+        $cart->cartQty = $request->get('cartQty');
         $cart->userId = $request->get('userId');
         $cart->save();
         return response()->json($cart);
@@ -51,9 +52,16 @@ class CartController extends Controller
      * @param  \App\Models\cart  $cart
      * @return \Illuminate\Http\Response
      */
-    public function show(cart $cart)
+    public function show($id)
     {
-        //
+        $cart = DB::table('carts')
+            ->leftJoin('product', 'carts.productId', '=', 'product.id')
+            ->leftJoin('product_images', function ($join) {
+                $join->on('product_images.id', '=', DB::raw('(Select id from product_images where product_images.productId = carts.productId LIMIT 1)'));
+            })
+            ->select('product.*', 'carts.cartQty','carts.cartId', 'product_images.path')->distinct('productId')
+            ->where('userId', $id)->get();
+        return response()->json($cart);
     }
 
     /**
@@ -85,8 +93,16 @@ class CartController extends Controller
      * @param  \App\Models\cart  $cart
      * @return \Illuminate\Http\Response
      */
-    public function destroy(cart $cart)
+    public function destroy($id)
     {
-        //
+        $cart = DB::table('carts')
+            ->where('userId', $id)->delete();
+        return response()->json($cart);
+    }
+
+
+    public function delete($id){
+        $cart = DB::table('carts')->where('cartId',$id)->delete();
+        return response()->json($cart);
     }
 }

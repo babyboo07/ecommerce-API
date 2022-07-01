@@ -82,8 +82,9 @@ class ProductImageController extends Controller
      * @param  \App\Models\ProductImage  $productImage
      * @return \Illuminate\Http\Response
      */
-    public function destroy(ProductImage $productImage)
+    public function destroy($id)
     {
-        //
+        $productImage = DB::table('product_image')
+        ->where('productId',$id);
     }
 }

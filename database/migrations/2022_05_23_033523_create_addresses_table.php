@@ -15,9 +15,10 @@ return new class extends Migration
     {
         Schema::create('address', function (Blueprint $table) {
             $table->id();
-            $table->string('address',500);
+            $table->string('address_user',500);
+            $table->string('receiverName',500);
             $table->string('phoneNumber',11);
-            $table->integer('receiverName');
+            $table->foreignId('userId')->constrained('users');
         });
     }
 

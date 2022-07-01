@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('productId')->constrained('product');
             $table->integer('qty');
-            $table->integer('evaluate');
+            $table->integer('evaluate')->nullable();
             $table->string('comment',500)->nullable();
             $table->foreignId('userId')->constrained('users');
             $table->integer('status');

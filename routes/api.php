@@ -1,11 +1,15 @@
 <?php
 
+use App\Http\Controllers\AddressController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductLoverController;
+use App\Http\Controllers\PurchasedProductController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
+use App\Models\ProductLover;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -39,6 +43,7 @@ Route::controller(UserController::class)->group(function () {
     Route::get('/users/delete/{id}', 'destroy');
     Route::get('/users/show/{id}', 'show');
     Route::post('/users/edit/{id}', 'edit');
+    Route::post('/users/editpassword/{id}', 'editpassword');
 });
 
 Route::controller(CategoryController::class)->group(function () {
@@ -59,6 +64,27 @@ Route::controller(ProductController::class)->group(function () {
     Route::post('/product/edit/{id}', 'edit');
 });
 
-Route::controller(CartController::class)->group(function (){
+Route::controller(CartController::class)->group(function () {
     Route::post('/cart/add', 'create');
+    Route::get('/cart/show/{id}', 'show');
+    Route::get('/cart/destroy/{id}', 'destroy');
+    Route::get('/cart/delete/{id}', 'delete');
+});
+
+Route::controller(AddressController::class)->group(function () {
+    Route::get('/address/{id}', 'show');
+    Route::post('/address/add', 'create');
+    Route::get('/address/detail/{id}', 'details');
+    Route::post('/address/edit/{id}', 'edit');
+});
+
+Route::controller(PurchasedProductController::class)->group(function () {
+    Route::post('/purchasedProducts/add', 'create');
+    Route::get('/purchasedProducts/{userId}','index');
+});
+
+Route::controller(ProductLoverController::class)->group(function () {
+    Route::post('/productLovers/add', 'create');
+    Route::get('/productLovers/{id}','index');
+    Route::get('/productLovers/delete/{proLoverId}/{userId}','destroy');
 });

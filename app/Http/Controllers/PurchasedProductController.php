@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\purchasedProduct;
 use App\Http\Requests\StorepurchasedProductRequest;
 use App\Http\Requests\UpdatepurchasedProductRequest;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PurchasedProductController extends Controller
 {
@@ -13,9 +15,12 @@ class PurchasedProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($userId)
     {
-        //
+        $order = DB::table('purchased_products')
+        ->where('userId',$userId)
+        ->select('*')->get();
+        return response()->json($order);
     }
 
     /**
@@ -23,9 +28,24 @@ class PurchasedProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        $productId = $request->get('id');
+        $userId =  $request->get('userId');
+        $qty = $request->get('cartQty');
+        $status = $request->get('status');
+        $discount = $request->get('discount');
+
+        $purchased_pr =array(
+            'productId' => $productId,
+            'userId' => $userId,
+            'qty' => $qty,
+            'status' => $status,
+            'discount' => $discount,
+        );
+
+        DB::table('purchased_products')->insert($purchased_pr);
+        return response()->json($purchased_pr);
     }
 
     /**
