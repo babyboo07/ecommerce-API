@@ -14,16 +14,16 @@ return new class extends Migration
     public function up()
     {
         Schema::create('purchased_products', function (Blueprint $table) {
-            $table->id();
+            $table->id('orderId');
             $table->foreignId('productId')->constrained('product');
-            $table->integer('qty');
-            $table->integer('evaluate')->nullable();
+            $table->integer('orderQty');
+            $table->integer('orderEvaluate')->nullable();
             $table->string('comment',500)->nullable();
             $table->foreignId('userId')->constrained('users');
             $table->integer('status');
             $table->date('createdDate')->nullable();
             $table->date('updatedDate')->nullable();
-            $table->integer('discount');
+            $table->integer('orderDiscount');
         });
     }
 

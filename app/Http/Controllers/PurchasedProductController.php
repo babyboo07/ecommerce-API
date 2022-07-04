@@ -15,11 +15,30 @@ class PurchasedProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index($userId)
+    public function index($userId, $status)
     {
-        $order = DB::table('purchased_products')
-        ->where('userId',$userId)
-        ->select('*')->get();
+        $order = DB::table('purchased_products as p')
+            ->leftJoin('product', 'p.productId', '=', 'product.id')
+            ->leftJoin('product_images', function ($join) {
+                $join->on('product_images.id', '=', DB::raw('(Select id from product_images where product_images.productId = p.productId LIMIT 1)'));
+            })
+            ->select('product.*', 'p', 'product_images.path')->distinct('productId')
+            ->where('userId', $userId)->where('p.status', $status)
+            ->select('*')->get();
+        return response()->json($order);
+    }
+
+    public function getall($id)
+    {
+        $order = DB::table('purchased_products as p')
+            ->leftJoin('product', 'p.productId', '=', 'product.id')
+            //->leftJoin('product_images', 'p.productId', '=', 'product_images.productId')
+            ->leftJoin('product_images', function ($join) {
+                $join->on('product_images.id', '=', DB::raw('(Select id from product_images where product_images.productId = p.productId LIMIT 1)'));
+            })
+            ->select('product.*', 'p.*', 'product_images.path')->distinct('productId')
+            ->where('userId', $id)->get();
+            //->select('*')->get();
         return response()->json($order);
     }
 
@@ -36,12 +55,12 @@ class PurchasedProductController extends Controller
         $status = $request->get('status');
         $discount = $request->get('discount');
 
-        $purchased_pr =array(
+        $purchased_pr = array(
             'productId' => $productId,
             'userId' => $userId,
-            'qty' => $qty,
+            'orderQty' => $qty,
             'status' => $status,
-            'discount' => $discount,
+            'orderDiscount' => $discount,
         );
 
         DB::table('purchased_products')->insert($purchased_pr);

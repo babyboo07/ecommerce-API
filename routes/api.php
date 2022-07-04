@@ -80,11 +80,12 @@ Route::controller(AddressController::class)->group(function () {
 
 Route::controller(PurchasedProductController::class)->group(function () {
     Route::post('/purchasedProducts/add', 'create');
-    Route::get('/purchasedProducts/{userId}','index');
+    Route::get('/purchasedProducts/{id}', 'getall');
+    Route::get('/purchasedProducts/userid{userId}/status{status}', 'index');
 });
 
 Route::controller(ProductLoverController::class)->group(function () {
     Route::post('/productLovers/add', 'create');
-    Route::get('/productLovers/{id}','index');
-    Route::get('/productLovers/delete/{proLoverId}/{userId}','destroy');
+    Route::get('/productLovers/{id}', 'index');
+    Route::get('/productLovers/delete/{proLoverId}/{userId}', 'destroy');
 });
