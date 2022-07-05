@@ -38,7 +38,23 @@ class PurchasedProductController extends Controller
             })
             ->select('product.*', 'p.*', 'product_images.path')->distinct('productId')
             ->where('userId', $id)->get();
-            //->select('*')->get();
+        return response()->json($order);
+    }
+
+    public function getorder($status)
+    {
+        $order = DB::table('purchased_products as p')
+            ->leftJoin('product', 'p.productId', '=', 'product.id')
+            ->leftJoin('product_images', function ($join) {
+                $join->on('product_images.id', '=', DB::raw('(Select id from product_images where product_images.productId = p.productId LIMIT 1)'));
+            })
+            ->leftJoin('address', function ($join) {
+                $join->on('address.id', '=', DB::raw('(Select id from address where address.userId = p.userId LIMIT 1)'));
+            })
+            ->leftJoin('category', 'product.cateId', '=', 'category.id')
+            ->where('p.status', $status)
+            ->select('product.*', 'p.*', 'product_images.path')->distinct('productId')
+            ->select('*')->get();
         return response()->json($order);
     }
 
@@ -84,9 +100,16 @@ class PurchasedProductController extends Controller
      * @param  \App\Models\purchasedProduct  $purchasedProduct
      * @return \Illuminate\Http\Response
      */
-    public function show(purchasedProduct $purchasedProduct)
+    public function show($orderId)
     {
-        //
+        $order = DB::table('purchased_products as p')
+            ->leftJoin('product', 'p.productId', '=', 'product.id')
+            ->leftJoin('address', function ($join) {
+                $join->on('address.id', '=', DB::raw('(Select id from address where address.userId = p.userId LIMIT 1)'));
+            })
+            ->leftJoin('category', 'product.cateId', '=', 'category.id')
+            ->where('orderId', $orderId)->get();
+        return response()->json($order);
     }
 
     /**

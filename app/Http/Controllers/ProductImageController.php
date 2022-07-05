@@ -84,7 +84,8 @@ class ProductImageController extends Controller
      */
     public function destroy($id)
     {
-        $productImage = DB::table('product_image')
-        ->where('productId',$id);
+        $productImage = DB::table('product_images')
+        ->where('productId',$id)->delete();
+        return response()->json($productImage);
     }
 }

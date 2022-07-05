@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductImageController;
 use App\Http\Controllers\ProductLoverController;
 use App\Http\Controllers\PurchasedProductController;
 use App\Http\Controllers\RoleController;
@@ -82,10 +83,16 @@ Route::controller(PurchasedProductController::class)->group(function () {
     Route::post('/purchasedProducts/add', 'create');
     Route::get('/purchasedProducts/{id}', 'getall');
     Route::get('/purchasedProducts/userid{userId}/status{status}', 'index');
+    Route::get('/purchasedProducts/status/{status}', 'getorder');
+    Route::get('/purchasedProducts/orderId/{orderId}', 'show');
 });
 
 Route::controller(ProductLoverController::class)->group(function () {
     Route::post('/productLovers/add', 'create');
     Route::get('/productLovers/{id}', 'index');
     Route::get('/productLovers/delete/{proLoverId}/{userId}', 'destroy');
+});
+
+Route::controller(ProductImageController::class)->group(function (){
+    Route::get('/productImage/delete/{id}', 'destroy');
 });
