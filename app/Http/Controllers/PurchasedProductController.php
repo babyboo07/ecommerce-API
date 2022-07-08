@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\purchasedProduct;
 use App\Http\Requests\StorepurchasedProductRequest;
 use App\Http\Requests\UpdatepurchasedProductRequest;
+use Illuminate\Foundation\Console\UpCommand;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -144,5 +145,24 @@ class PurchasedProductController extends Controller
     public function destroy(purchasedProduct $purchasedProduct)
     {
         //
+    }
+
+    public function cancel($orderId , Request $request){
+        $ret = ['status' => 'failed', 'message' => ''];
+        $order = purchasedProduct::find($orderId);
+
+        if (!$order) {
+            $ret['message'] = 'Cannot found order with id =' . $orderId;
+
+            return response()->json($ret);
+        }
+
+        $order->status = $request->get('status');
+        $order->update();
+
+        $ret['status'] = 'success';
+        $ret['message'] = 'Updated order successfully';
+        $ret['data'] = $order;
+        return response()->json($ret);
     }
 }

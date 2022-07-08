@@ -85,6 +85,7 @@ Route::controller(PurchasedProductController::class)->group(function () {
     Route::get('/purchasedProducts/userid{userId}/status{status}', 'index');
     Route::get('/purchasedProducts/status/{status}', 'getorder');
     Route::get('/purchasedProducts/orderId/{orderId}', 'show');
+    Route::post('/purchasedProducts//edit/{orderId}','cancel');
 });
 
 Route::controller(ProductLoverController::class)->group(function () {
