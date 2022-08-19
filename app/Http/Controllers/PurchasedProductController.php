@@ -9,6 +9,7 @@ use Illuminate\Foundation\Console\UpCommand;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
+
 class PurchasedProductController extends Controller
 {
     /**
@@ -149,20 +150,20 @@ class PurchasedProductController extends Controller
 
     public function cancel($orderId , Request $request){
         $ret = ['status' => 'failed', 'message' => ''];
-        $order = purchasedProduct::find($orderId);
+        $order = purchasedProduct::where('orderId', '=', $orderId);
 
         if (!$order) {
             $ret['message'] = 'Cannot found order with id =' . $orderId;
 
             return response()->json($ret);
         }
-
-        $order->status = $request->get('status');
-        $order->update();
+        
+        $order->update(['status' => $request->get('status')]);
 
         $ret['status'] = 'success';
         $ret['message'] = 'Updated order successfully';
         $ret['data'] = $order;
+
         return response()->json($ret);
     }
 }

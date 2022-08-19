@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use Mockery\Undefined;
 
 use function PHPUnit\Framework\isNull;
@@ -26,7 +27,7 @@ class UserController extends Controller
     {
         //
         $users = DB::table('users')->join('roles', 'users.roleId', '=', 'roles.id')
-        ->select('users.*', 'roles.roleName')->orderBy('users.id', 'asc');
+            ->select('users.*', 'roles.roleName')->orderBy('users.id', 'asc');
         $users = $users->get();
         return response()->json($users);
     }
@@ -174,5 +175,70 @@ class UserController extends Controller
     public function getUserInfo()
     {
         return response()->json(auth()->user());
+    }
+
+    public function createUser(Request $request)
+    {
+        $usersData = $request->all();
+        $validator = Validator::make($usersData, [
+            'fullName' => 'sometimes|required|string|alpha|unique:users',
+            'email' => 'sometimes|required|email|unique:users',
+            'password' => 'required|string|min:6|max:50'
+        ]);
+
+        //Send failed response if request is not valid
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 200);
+        }
+
+        $fullname = $request->get('fullName');
+        $password = bcrypt($request->get('password'));
+        $phone = $request->get('phone');
+        $email = $request->get('email');
+        $address = $request->get('address');
+        $dob = date('Y-m-d', strtotime($request->get('dob')));
+        $gender = $request->get('gender');
+
+        $usersData = array(
+            'fullName' => $fullname,
+            'password' => $password,
+            'phone' => $phone,
+            'email' => $email,
+            'address' => $address,
+            'dob' => $dob,
+            'gender' => $gender
+        );
+        DB::table('users')->insert($usersData);
+        return response()->json($usersData);
+    }
+    public function getAllUser()
+    {
+        $user = DB::table('users')->select('*')->get();
+        return response()->json($user);
+    }
+
+    public function editUser($id, Request $request)
+    {
+        $ret = ['status' => 'failed', 'message' => ''];
+        $users = User::find($id);
+
+        if (!$users) {
+            $ret['message'] = 'Cannot found user with id =' . $id;
+
+            return response()->json($ret);
+        }
+        $users->fullName = $request->get('fullName');
+        $users->phone = $request->get('phone');
+        $users->email = $request->get('email');
+        $users->address = $request->get('address');
+        $users->dob = date('Y-m-d', strtotime($request->get('dob')));
+        $users->gender = $request->get('gender');
+        $users->update();
+
+        $ret['status'] = 'success';
+        $ret['message'] = 'Updated user successfully';
+        $ret['data'] = $users;
+
+        return response()->json($ret);
     }
 }

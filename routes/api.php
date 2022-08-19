@@ -45,6 +45,9 @@ Route::controller(UserController::class)->group(function () {
     Route::get('/users/show/{id}', 'show');
     Route::post('/users/edit/{id}', 'edit');
     Route::post('/users/editpassword/{id}', 'editpassword');
+    Route::post('/users/createNew', 'createUser');
+    Route::get('/users/getAll',"getAllUser");
+    Route::post('/users/editUser/{id}', 'editUser');
 });
 
 Route::controller(CategoryController::class)->group(function () {
@@ -85,7 +88,7 @@ Route::controller(PurchasedProductController::class)->group(function () {
     Route::get('/purchasedProducts/userid{userId}/status{status}', 'index');
     Route::get('/purchasedProducts/status/{status}', 'getorder');
     Route::get('/purchasedProducts/orderId/{orderId}', 'show');
-    Route::post('/purchasedProducts//edit/{orderId}','cancel');
+    Route::post('/purchasedProducts/edit/{orderId}','cancel');
 });
 
 Route::controller(ProductLoverController::class)->group(function () {
